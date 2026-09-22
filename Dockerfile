@@ -92,7 +92,7 @@ RUN git clone  --depth 1 --branch ${LOFARBEAM_VERSION} \
     cmake .. && \
     make install -j`nproc`
 
-ARG EVERYBEAM_VERSION=master
+ARG EVERYBEAM_VERSION=v0.3.1
 RUN git clone --depth 1  --branch ${EVERYBEAM_VERSION} \
         https://git.astron.nl/RD/EveryBeam.git && \
     mkdir EveryBeam/build && \
