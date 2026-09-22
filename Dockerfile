@@ -65,7 +65,7 @@ RUN git clone --depth 1 --branch ${DYSCO_VERSION} \
 ARG IDG_VERSION=master
 # IDG doesn't work with --depth 1, because it needs all branches to
 # determine its version :-(
-RUN git clone --branch main \
+RUN git clone --branch master \
         https://git.astron.nl/RD/idg.git && \
     mkdir idg/build && \
     cd idg/build && \
