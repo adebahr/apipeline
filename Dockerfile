@@ -66,7 +66,7 @@ ARG IDG_VERSION=master
 # IDG doesn't work with --depth 1, because it needs all branches to
 # determine its version :-(
 RUN apt-get update && apt-get install -y wget && \
-    wget -qO- https://github.com | tar --strip-components=1 -xz -C /usr/local && \
+    wget -qO- https://cmake.org/files/v3.26/cmake-3.26.4-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /usr/local && \
     apt-get purge -y wget && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://git.astron.nl/RD/idg.git && \
