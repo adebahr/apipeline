@@ -47,7 +47,7 @@ WORKDIR /src
 ARG PORTABLE=TRUE
 
 ARG LOFARSTMAN_VERSION=master
-RUN git clone --depth 1 --branch ${LOFARSTMAN_VERSION} \
+RUN git clone --depth 1 --branch main \
         https://github.com/lofar-astron/LofarStMan && \
     mkdir LofarStMan/build && \
     cd LofarStMan/build && \
