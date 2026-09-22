@@ -67,7 +67,7 @@ ARG IDG_VERSION=master
 # determine its version :-(
 RUN apt-get update && apt-get install -y wget && \
     wget -qO- https://cmake.org/files/v3.26/cmake-3.26.4-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /usr/local && \
-    apt-get purge -y wget && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://git.astron.nl/RD/idg.git && \
     mkdir idg/build && \
