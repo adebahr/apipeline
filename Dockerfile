@@ -108,7 +108,7 @@ RUN git clone --depth 1 --branch ${SAGECAL_VERSION} \
     cmake .. -DLIB_ONLY=1 && \
     make install -j`nproc`
 
-ARG DP3_VERSION=master
+ARG DP3_VERSION=v5.3
 RUN git clone --branch ${DP3_VERSION} \
         https://git.astron.nl/RD/DP3.git && \
     mkdir DP3/build && \
