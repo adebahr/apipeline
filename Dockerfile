@@ -56,15 +56,15 @@ RUN git clone --depth 1 --branch main \
         https://github.com/lofar-astron/LofarStMan && \
     mkdir LofarStMan/build && \
     cd LofarStMan/build && \
-    cmake .. -DPORTABLE=\${PORTABLE} && \
+    cmake .. -DPORTABLE=${PORTABLE} && \
     make install -j`nproc`
 
 ARG DYSCO_VERSION=master
-RUN git clone --depth 1 --branch \${DYSCO_VERSION} \
+RUN git clone --depth 1 --branch ${DYSCO_VERSION} \
         https://github.com/aroffringa/dysco.git && \
     mkdir dysco/build && \
     cd dysco/build && \
-    cmake .. -DPORTABLE=\${PORTABLE} && \
+    cmake .. -DPORTABLE=${PORTABLE} && \
     make install -j`nproc`
 
 ARG IDG_VERSION=master
@@ -80,16 +80,16 @@ RUN git clone https://git.astron.nl/RD/idg.git && \
     make install -j`nproc`
 
 ARG AOFLAGGER_VERSION=master
-RUN git clone --branch \${AOFLAGGER_VERSION} \
+RUN git clone --branch ${AOFLAGGER_VERSION} \
         https://gitlab.com/aroffringa/aoflagger.git && \
     mkdir aoflagger/build && \
     cd aoflagger && git fetch && git checkout bfb3978e734911457555ac244d255f4b4ce6df68 && \
     cd build && \
-    cmake .. -DPORTABLE=\${PORTABLE} && \
+    cmake .. -DPORTABLE=${PORTABLE} && \
     make install -j`nproc`
 
 ARG LOFARBEAM_VERSION=master
-RUN git clone  --depth 1 --branch \${LOFARBEAM_VERSION} \
+RUN git clone  --depth 1 --branch ${LOFARBEAM_VERSION} \
         https://github.com/lofar-astron/LOFARBeam.git && \
     mkdir LOFARBeam/build && \
     cd LOFARBeam/build && \
@@ -97,7 +97,7 @@ RUN git clone  --depth 1 --branch \${LOFARBEAM_VERSION} \
     make install -j`nproc`
 
 ARG EVERYBEAM_VERSION=v0.3.1
-RUN git clone --depth 1  --branch \${EVERYBEAM_VERSION} \
+RUN git clone --depth 1  --branch ${EVERYBEAM_VERSION} \
         https://git.astron.nl/RD/EveryBeam.git && \
     mkdir EveryBeam/build && \
     cd EveryBeam/build && \
@@ -105,7 +105,7 @@ RUN git clone --depth 1  --branch \${EVERYBEAM_VERSION} \
     make install -j`nproc`
 
 ARG SAGECAL_VERSION=master
-RUN git clone --depth 1 --branch \${SAGECAL_VERSION} \
+RUN git clone --depth 1 --branch ${SAGECAL_VERSION} \
         https://github.com/nlesc-dirac/sagecal && \
     mkdir sagecal/build && \
     cd sagecal/build && \
@@ -113,19 +113,19 @@ RUN git clone --depth 1 --branch \${SAGECAL_VERSION} \
     make install -j`nproc`
 
 ARG DP3_VERSION=v5.3
-RUN git clone --branch \${DP3_VERSION} \
+RUN git clone --branch ${DP3_VERSION} \
         https://git.astron.nl/RD/DP3.git && \
     mkdir DP3/build && \
     cd DP3/build && \
-    cmake .. -DPORTABLE=\${PORTABLE} -DLIBDIRAC_PREFIX=/usr/local/ && \
+    cmake .. -DPORTABLE=${PORTABLE} -DLIBDIRAC_PREFIX=/usr/local/ && \
     make install -j`nproc`
 
 ARG WSCLEAN_VERSION=master
-RUN git clone --depth 1 --branch \${WSCLEAN_VERSION} \
+RUN git clone --depth 1 --branch ${WSCLEAN_VERSION} \
         https://gitlab.com/aroffringa/wsclean.git && \
     mkdir wsclean/build && \
     cd wsclean/build && \
-    cmake .. -DPORTABLE=\${PORTABLE} && \
+    cmake .. -DPORTABLE=${PORTABLE} && \
     make install -j`nproc`
 
 # Pip von PyPA holen
