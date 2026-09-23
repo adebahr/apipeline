@@ -43,7 +43,7 @@ RUN cd /src && \
     tar -xf boost_1_77_0.tar.bz2 && \
     cd boost_1_77_0 && \
     ./bootstrap.sh --prefix=/usr/local --with-python=python3 && \
-    ./b2 install -j`nproc` -with-python --with-numpy && \
+    ./b2 install -j`nproc` --with-python --with-numpy && \
     cd .. && rm -rf boost_1_77_0*
 
 WORKDIR /src
