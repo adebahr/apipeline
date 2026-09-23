@@ -6,6 +6,9 @@ FROM ubuntu:20.04 as builder
 # Install all build-time dependencies
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
+    apt-get update && \
     apt-get install -y \
         bison \
         build-essential \
@@ -16,13 +19,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         gfortran \
         git \
         libblas-dev \
-        libboost-date-time-dev \
-        libboost-filesystem-dev \
-        libboost-numpy-dev \
-        libboost-program-options-dev \
-        libboost-python-dev \
-        libboost-system-dev \
-        libboost-test-dev \
         libcfitsio-dev \
         libfftw3-dev \
         libgsl-dev \
@@ -41,6 +37,15 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         wget && \
     mkdir -p /src
 
+# Boost manuell auf Version 1.77.0 upgraden (wird für schaapcommon/wsclean benötigt)
+RUN cd /src && \
+    wget https://jfrog.io && \
+    tar -xf boost_1_77_0.tar.bz2 && \
+    cd boost_1_77_0 && \
+    ./bootstrap.sh --prefix=/usr/local && \
+    ./b2 install -j`nproc` && \
+    cd .. && rm -rf boost_1_77_0*
+
 WORKDIR /src
 
 # Build portable binaries by default
@@ -51,20 +56,19 @@ RUN git clone --depth 1 --branch main \
         https://github.com/lofar-astron/LofarStMan && \
     mkdir LofarStMan/build && \
     cd LofarStMan/build && \
-    cmake .. -DPORTABLE=${PORTABLE} && \
+    cmake .. -DPORTABLE=\${PORTABLE} && \
     make install -j`nproc`
 
 ARG DYSCO_VERSION=master
-RUN git clone --depth 1 --branch ${DYSCO_VERSION} \
+RUN git clone --depth 1 --branch \${DYSCO_VERSION} \
         https://github.com/aroffringa/dysco.git && \
     mkdir dysco/build && \
     cd dysco/build && \
-    cmake .. -DPORTABLE=${PORTABLE} && \
+    cmake .. -DPORTABLE=\${PORTABLE} && \
     make install -j`nproc`
 
 ARG IDG_VERSION=master
-# IDG doesn't work with --depth 1, because it needs all branches to
-# determine its version :-(
+# IDG benötigt ein neueres CMake
 RUN apt-get update && apt-get install -y wget && \
     wget -qO- https://cmake.org/files/v3.26/cmake-3.26.4-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /usr/local && \
     rm -rf /var/lib/apt/lists/*
@@ -76,16 +80,16 @@ RUN git clone https://git.astron.nl/RD/idg.git && \
     make install -j`nproc`
 
 ARG AOFLAGGER_VERSION=master
-RUN git clone --branch ${AOFLAGGER_VERSION} \
+RUN git clone --branch \${AOFLAGGER_VERSION} \
         https://gitlab.com/aroffringa/aoflagger.git && \
     mkdir aoflagger/build && \
     cd aoflagger && git fetch && git checkout bfb3978e734911457555ac244d255f4b4ce6df68 && \
     cd build && \
-    cmake .. -DPORTABLE=${PORTABLE} && \
+    cmake .. -DPORTABLE=\${PORTABLE} && \
     make install -j`nproc`
 
 ARG LOFARBEAM_VERSION=master
-RUN git clone  --depth 1 --branch ${LOFARBEAM_VERSION} \
+RUN git clone  --depth 1 --branch \${LOFARBEAM_VERSION} \
         https://github.com/lofar-astron/LOFARBeam.git && \
     mkdir LOFARBeam/build && \
     cd LOFARBeam/build && \
@@ -93,7 +97,7 @@ RUN git clone  --depth 1 --branch ${LOFARBEAM_VERSION} \
     make install -j`nproc`
 
 ARG EVERYBEAM_VERSION=v0.3.1
-RUN git clone --depth 1  --branch ${EVERYBEAM_VERSION} \
+RUN git clone --depth 1  --branch \${EVERYBEAM_VERSION} \
         https://git.astron.nl/RD/EveryBeam.git && \
     mkdir EveryBeam/build && \
     cd EveryBeam/build && \
@@ -101,7 +105,7 @@ RUN git clone --depth 1  --branch ${EVERYBEAM_VERSION} \
     make install -j`nproc`
 
 ARG SAGECAL_VERSION=master
-RUN git clone --depth 1 --branch ${SAGECAL_VERSION} \
+RUN git clone --depth 1 --branch \${SAGECAL_VERSION} \
         https://github.com/nlesc-dirac/sagecal && \
     mkdir sagecal/build && \
     cd sagecal/build && \
@@ -109,54 +113,32 @@ RUN git clone --depth 1 --branch ${SAGECAL_VERSION} \
     make install -j`nproc`
 
 ARG DP3_VERSION=v5.3
-RUN git clone --branch ${DP3_VERSION} \
+RUN git clone --branch \${DP3_VERSION} \
         https://git.astron.nl/RD/DP3.git && \
     mkdir DP3/build && \
     cd DP3/build && \
-    cmake .. -DPORTABLE=${PORTABLE} -DLIBDIRAC_PREFIX=/usr/local/ && \
+    cmake .. -DPORTABLE=\${PORTABLE} -DLIBDIRAC_PREFIX=/usr/local/ && \
     make install -j`nproc`
 
 ARG WSCLEAN_VERSION=master
-RUN git clone --depth 1 --branch ${WSCLEAN_VERSION} \
+RUN git clone --depth 1 --branch \${WSCLEAN_VERSION} \
         https://gitlab.com/aroffringa/wsclean.git && \
     mkdir wsclean/build && \
     cd wsclean/build && \
-    cmake .. -DPORTABLE=${PORTABLE} && \
+    cmake .. -DPORTABLE=\${PORTABLE} && \
     make install -j`nproc`
 
-
-
-# kvis
-#RUN cd /src && \
-#    apt-get install -y libxaw7 && \
-#    wget ftp://ftp.atnf.csiro.au/pub/software/karma/karma-1.7.25-common.tar.bz2 && \
-#    wget ftp://ftp.atnf.csiro.au/pub/software/karma/karma-1.7.25-amd64_Linux_libc6.3.tar.bz2 && \
-#    tar -xvf karma-1.7.25-amd64_Linux_libc6.3.tar.bz2 && \
-#    tar -xvf karma-1.7.25-common.tar.bz2 && \
-#    mv karma-1.7.25 /usr/local/karma && \
-#    ln -s /usr/local/karma/amd64_Linux_libc6.3/bin/./kvis /usr/local/bin/kvis && \
-#    ln -s /usr/local/karma/amd64_Linux_libc6.3/bin/./kshell /usr/local/bin/kshell && \
-#    ln -s /usr/local/karma/amd64_Linux_libc6.3/bin/./kpvslice /usr/local/bin/kpvslice
-#ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/karma/amd64_Linux_libc6.3/lib/
-#ENV KARMABASE="/usr/local/karma/amd64_Linux_libc6.3"
-
-
-
-# Do not use `pip` from the Debian repository, but fetch it from PyPA.
-# This way, we are sure that the latest versions of `pip`, `setuptools`, and
-# `wheel` are installed in /usr/local, the only directory we're going to copy
-# over to the next build stage.
+# Pip von PyPA holen
 RUN wget https://bootstrap.pypa.io/get-pip.py && \
     python3 get-pip.py
 
-# Install required python packages
+# Python-Standard-Build-Tools installieren
 RUN python3 -m pip install --no-cache-dir --upgrade \
     cwl-runner \
     cwltool
 
 # AO tools
-RUN \
-    cd /src && \
+RUN cd /src && \
     git clone https://github.com/aroffringa/modeltools.git modeltools && \
     cd modeltools && \
     mkdir build && \
@@ -176,13 +158,8 @@ RUN cd /src/makemask && \
     cp makeMaskFits makeNoiseMapFits makeCombMaskFits makeNoiseMapFitsLow /usr/local/bin/ && \
     cd
 
-#    gcc getMaxFits.c -o getMaxFits -lcfitsio -lm && \
-#    gcc locNoiseMed.c -o locNoiseMed -lcfitsio -lm && \
-#    gcc cookbook.c -o cookbook -lcfitsio -lm && \
-
 #---------------------------------------------------------------------------
-# The image will now be rebuilt without adding the sources, in order to
-# reduce the size of the image.
+# Runner Stage
 #---------------------------------------------------------------------------
 FROM ubuntu:20.04 as runner
 RUN mkdir /src
@@ -191,7 +168,6 @@ RUN chmod +rx /usr/local/bin/*
 
 SHELL ["/bin/bash", "-c"]
 
-# Set default versions. Can be overridden from the command-line
 ARG LOFARSTMAN_VERSION=master
 ARG DYSCO_VERSION=master
 ARG IDG_VERSION=master
@@ -201,17 +177,12 @@ ARG EVERYBEAM_VERSION=master
 ARG DP3_VERSION=master
 ARG WSCLEAN_VERSION=master
 
-
-# Only install run-time required packages
+# Laufzeitabhängigkeiten installieren (Alte Boost-Pakete entfernt, da wir /usr/local nutzen)
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
     apt-get install -y \
         casacore-tools \
         libatkmm-1.6-1v5 \
-        libboost-date-time1.71.0 \
-        libboost-filesystem1.71.0 \
-        libboost-program-options1.71.0 \
-        libboost-python1.71.0 \
         libcairomm-1.0-1v5 \
         libcasa-casa4 \
         libcasa-fits4 \
@@ -245,44 +216,15 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         git && \
     rm -rf /var/lib/apt/lists/*
 
+# Wichtig: Den Linker anweisen, die neuen Boost-Bibliotheken in /usr/local/lib zu indizieren
+RUN ldconfig
 
 # Install WSRT Measures (extra casacore data)
-# Note: The file on the ftp site is updated daily. When warnings regarding leap
-# seconds appear, ignore them or regenerate the docker image.
 RUN wget -q -O /WSRT_Measures.ztar \
         ftp://ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar && \
     cd /var/lib/casacore/data && \
     tar xfz /WSRT_Measures.ztar && \
     rm /WSRT_Measures.ztar
 
-# Some python stuff
+# Python PIP Pakete installieren
 RUN python3 -m pip install h5py pandas pyyaml astropy matplotlib==3.5.2 scipy shapely bdsf ipython radio_beam scikit-learn
-#    cd /src && \
-#   git clone https://github.com/lofar-astron/PyBDSF.git && \
-#  cd /src/PyBDSF && \
-#    python3 -m pip install . && \
-#    cd
-
-# AImCal
-ADD imcal.py /opt/imcal.py
-ADD cluster.py /opt/cluster.py
-ADD nvss_cutout.py /opt/nvss_cutout.py
-ADD imcal.yml /opt/imcal.yml
-ADD nvss.csv.zip /opt/nvss.csv.zip
-RUN ln -s /opt/imcal.py /usr/local/bin/imcal.py
-
-
-# Try to run the compiled tools to make sure they run without
-# a problem (e.g. no missing libraries).
-
-#RUN aoflagger --version && \
-#    DP3 --version && \
-#    wsclean --version
-
-# Clean
-#RUN rm -rf /software/*
-
-
-
-
-
