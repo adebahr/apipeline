@@ -109,7 +109,7 @@ RUN git clone --depth 1 --branch ${SAGECAL_VERSION} \
     make install -j`nproc`
 
 ARG DP3_VERSION=v5.4.1
-RUN git clone --depth 1 --branch ${DP3_VERSION} \
+RUN git clone --branch ${DP3_VERSION} \
         https://git.astron.nl/RD/DP3.git && \
     mkdir DP3/build && \
     cd DP3/build && \
