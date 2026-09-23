@@ -39,7 +39,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 
 # Boost manuell auf Version 1.77.0 upgraden (wird für schaapcommon/wsclean benötigt)
 RUN cd /src && \
-    wget https://boost.io && \
+    wget https://sourceforge.net/projects/boost/files/boost/1.77.0/boost_1_77_0.tar.bz2/download && \
     tar -xf boost_1_77_0.tar.bz2 && \
     cd boost_1_77_0 && \
     ./bootstrap.sh --prefix=/usr/local && \
